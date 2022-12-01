@@ -1,0 +1,9 @@
+{
+  "name": "adventofcode-2022",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
