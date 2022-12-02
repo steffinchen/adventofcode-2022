@@ -14,47 +14,71 @@ let input = getInput('day2');
 // DRAW = 3
 // WIN = 6
 
-const combos = {
-  AX: 4,
-  AY: 8,
-  AZ: 3,
-  BX: 1,
-  BY: 5,
-  BZ: 9,
-  CX: 7,
-  CY: 2,
-  CZ: 6,
-};
-
-// A = ROCK = 1
-// B = PAPER = 2
-// C = SCISSORES = 3
+// Part B
 // X LOSE
 // Y DRAW
 // Z WIN
 
-const combosPart2 = {
-  AX: 3,
-  AY: 4,
-  AZ: 8,
-  BX: 1,
-  BY: 5,
-  BZ: 9,
-  CX: 2,
-  CY: 6,
-  CZ: 7,
+const points = { X: 1, Y: 2, Z: 3 };
+
+const toWin = {
+  A: 'Y',
+  B: 'Z',
+  C: 'X',
+};
+const toDraw = {
+  A: 'X',
+  B: 'Y',
+  C: 'Z',
+};
+const toLose = {
+  A: 'Z',
+  B: 'X',
+  C: 'Y',
 };
 
+const calcWin = (shape) => points[shape] + 6;
+const calcDraw = (shape) => points[shape] + 3;
+const calcLoss = (shape) => points[shape] + 0;
+
+const isWin = (opp, me) => toWin[opp] === me;
+const isLoss = (opp, me) => toLose[opp] === me;
+
+const calc = (opponent, me) => {
+  if (isWin(opponent, me)) {
+    return calcWin(me);
+  } else if (isLoss(opponent, me)) {
+    return calcLoss(me);
+  } else {
+    return calcDraw(me);
+  }
+};
+
+const calcPart2 = (opponent, goal) => {
+  if (goal == 'X') {
+    const me = toLose[opponent];
+    return calcLoss(me);
+  } else if (goal == 'Y') {
+    const me = toDraw[opponent];
+    return calcDraw(me);
+  } else if (goal == 'Z') {
+    const me = toWin[opponent];
+    return calcWin(me);
+  }
+};
+
+//13009
 let a = input
   .split(/\n/)
-  .map((line) => line.replace(' ', ''))
-  .map((line) => combos[line])
+  .map((line) => line.split(' '))
+  .map(([opponent, me]) => calc(opponent, me))
   .reduce(sum, 0);
 console.log('🚀 -> Part 1', a);
 
+//10398
 let b = input
   .split(/\n/)
-  .map((line) => line.replace(' ', ''))
-  .map((line) => combosPart2[line])
+  .map((line) => line.split(' '))
+  .map(([opponent, me]) => calcPart2(opponent, me))
   .reduce(sum, 0);
 console.log('🚀 -> Part 2', b);
