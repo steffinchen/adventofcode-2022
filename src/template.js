@@ -6,7 +6,7 @@ const testInput = ``;
 let input = getInput('day_');
 
 let a = '';
-console.log('🚀 -> Part A', a);
+console.log('🚀 -> Part 1', a);
 
 let b = '';
-console.log('🚀 -> Part B', b);
+console.log('🚀 -> Part 2', b);
