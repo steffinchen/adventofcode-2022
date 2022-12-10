@@ -11,7 +11,7 @@ L 5
 R 2`;
 
 const testInput2 = `R 5
-U 2
+U 8
 L 8
 D 3
 R 17
@@ -44,6 +44,10 @@ const calculateDistance = ({ x, y }, { x2, y2 }) => {
   return dist;
 };
 
+const isTooFar = ({ x, y }, { x2, y2 }) => {
+  return Math.abs(x - x2) > 1 || Math.abs(y - y2) > 1;
+};
+
 const print = (visited) => {
   let minX = 0;
   let maxX = 0;
@@ -61,7 +65,7 @@ const print = (visited) => {
     let row = [];
     for (let x = minX; x <= maxX + 1; x++) {
       if (x === 0 && y === 0) row.push('s');
-      else row.push(visited.includes(`${x},${y}`) ? '#' : '.');
+      else row.push(visited.has(`${x},${y}`) ? '#' : '.');
     }
     grid.push(row);
   }
@@ -69,56 +73,38 @@ const print = (visited) => {
   console.log(' ');
 };
 
-/**
- * Moves the head by one step and
- * the tail by one step if the distance
- * between the head and the tail is greater than 1.
- * @param {*} direction
- * @param {*} {x,y} coordinates of the head
- * @param {*} {x,y} coordinates of the tail
- * @returns the new x,y coordinates of the head and tail
- */
-const moveTail = (direction, { x, y }, { tailX, tailY }) => {
+const moveTail = ({ x, y }, { tailX, tailY }) => {
   if (x === tailX || y === tailY) {
-    ({ x: tailX, y: tailY } = move(direction, { x: tailX, y: tailY }));
+    if (!isTooFar({ x, y }, { x2: tailX + 1, y2: tailY })) {
+      tailX++;
+    } else if (!isTooFar({ x, y }, { x2: tailX - 1, y2: tailY })) {
+      tailX--;
+    } else if (!isTooFar({ x, y }, { x2: tailX, y2: tailY + 1 })) {
+      tailY++;
+    } else {
+      tailY--;
+    }
   } else {
-    // let diffX = x - tailX;
-    // let diffY = y - tailY;
-    // if (x - tailX >= 2) {
-    //   tailX++;
-    // } else if (tailX - x >= 2) {
-    //   tailX--;
-    // } else if (y - tailY >= 2) {
-    //   tailY++;
-    // } else if (tailY - y >= 2) {
-    //   tailY--;
-    // }
-    switch (direction) {
-      case 'U':
-        tailY++;
-        tailX = x;
-        break;
-      case 'D':
-        tailY--;
-        tailX = x;
-        break;
-      case 'L':
-        tailX--;
-        tailY = y;
-        break;
-      case 'R':
-        tailX++;
-        tailY = y;
-        break;
+    if (!isTooFar({ x, y }, { x2: tailX + 1, y2: tailY + 1 })) {
+      tailX++;
+      tailY++;
+    } else if (!isTooFar({ x, y }, { x2: tailX + 1, y2: tailY - 1 })) {
+      tailX++;
+      tailY--;
+    } else if (!isTooFar({ x, y }, { x2: tailX - 1, y2: tailY + 1 })) {
+      tailX--;
+      tailY++;
+    } else {
+      tailX--;
+      tailY--;
     }
   }
-
   return { tailX, tailY };
 };
 
 const executeMoves = (motions, noOfKnots) => {
-  let visited = [];
-  visited.push(`0,0`);
+  let visited = new Set();
+  visited.add(`0,0`);
   let knots = _.range(noOfKnots).map((i) => ({ x: 0, y: 0 }));
   for (let motion of motions) {
     let { direction, distance } = motion;
@@ -131,30 +117,24 @@ const executeMoves = (motions, noOfKnots) => {
       for (let k = 1; k < knots.length; k++) {
         let { x: tailX, y: tailY } = knots[k];
         let { x: prevX, y: prevY } = knots[k - 1];
-        // console.log(knots);
         let distance = calculateDistance(
           { x: prevX, y: prevY },
           { x2: tailX, y2: tailY }
         );
-
         if (distance > 1) {
           ({ tailX, tailY } = moveTail(
-            direction,
             { x: prevX, y: prevY },
             { tailX, tailY }
           ));
         }
-        if (k === knots.length - 1) {
-          visited.push(`${tailX},${tailY}`);
-          //   console.log(tailX, tailY, 'x,y', x, /y);
-        }
         knots[k] = { x: tailX, y: tailY };
-        // if (k == 1) console.log('head ', knots[k]);
-        // console.log(visited);
+        if (k === knots.length - 1) {
+          visited.add(`${tailX},${tailY}`);
+        }
       }
-      // print(visited);
     }
   }
+  //   print(visited);
   return visited;
 };
 
@@ -165,8 +145,8 @@ let motions = input
     direction,
     distance: parseInt(distance),
   }));
-let a = _.chain(executeMoves(motions, 2)).uniq().value().length;
+let a = executeMoves(motions, 2).size;
 console.log('🚀 -> Part 1', a);
 
-// let b = _.chain(executeMoves(motions, 10)).uniq().value().length;
-// console.log('🚀 -> Part 2', b);
+let b = executeMoves(motions, 10).size;
+console.log('🚀 -> Part 2', b);
