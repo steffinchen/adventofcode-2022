@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import { getInput } from './helper.js';
-import assert from 'node:assert';
+import _ from "lodash";
+import { getInput } from "./helper.js";
+import assert from "node:assert";
 
 const testInput = `[1,1,3,1,1]
 [1,1,5,1,1]
@@ -26,7 +26,7 @@ const testInput = `[1,1,3,1,1]
 [1,[2,[3,[4,[5,6,7]]]],8,9]
 [1,[2,[3,[4,[5,6,0]]]],8,9]`;
 
-let input = getInput('day13');
+let input = getInput("day13");
 
 const checkPair = (left, right) => {
   //if both are integers
@@ -42,42 +42,59 @@ const checkPair = (left, right) => {
   }
   //if both are arrays
   if (Array.isArray(left) && Array.isArray(right)) {
-    //compare each item in left to each item in right
-    let allResults = [];
+    //compare each item in left to each item in right until one is not undefined
     for (let i = 0; i < left.length && right.length; i++) {
       let result = checkPair(left[i], right[i]);
       if (result !== undefined) {
-        allResults.push(result);
-        break;
+        return result;
       }
     }
-    if (left.length <= right.length) {
-      return allResults.every((result) => {
-        return result === true;
-      });
-    } else return false;
+    return left.length === right.length
+      ? undefined
+      : left.length < right.length;
   }
 };
+
+assert(checkPair([], []) === undefined);
+assert(checkPair([], [1]) === true);
+assert(checkPair([1], []) === false);
+assert(checkPair([[4, 4], 4, 4], [[4, 4], 4, 4, 4]) === true);
+assert(checkPair([7, 7, 7, 7], [7, 7, 7]) === false);
+assert(checkPair(1, 2) === true);
+assert(checkPair(2, 1) === false);
+assert(checkPair(1, 1) === undefined);
+assert(checkPair([2, 3, 4], [4]) === true);
+assert(checkPair([[[]]], [[]]) === false);
+assert(checkPair([5, 6, 7], [5, 6, 0]) === false);
+assert(checkPair([3, [4, [5, 6, 7]]], [3, [4, [5, 6, 0]]]) === false);
+assert(checkPair([2, 3], [3]) === true);
 
 let packets = input
   .split(/\n\n/)
   .map((pair) => pair.split(/\n/).map((part) => JSON.parse(part)));
 
 let a = _.map(packets, (pair) => checkPair(pair[0], pair[1])).reduce(
-  (sum, result, index) => {
-    if (result === undefined) {
-      console.log('found undefined for pair', index);
-      return sum;
-    }
-    if (result) return sum + index + 1;
-    return sum;
-  },
+  (sum, result, index) => (result ? sum + index + 1 : sum),
   0
 );
 
-//6048 is wrong
-//2102 is too low
-console.log('🚀 -> Part 1', a);
+console.log("🚀 -> Part 1", a);
 
-let b = '';
-console.log('🚀 -> Part 2', b);
+let withDividerPackets = (
+  input +
+  `
+[[2]]
+[[6]]`
+)
+  .replace(/\n\n/g, "\n")
+  .split(/\n/)
+  .map((packet) => JSON.parse(packet));
+let sorted = withDividerPackets.sort((a, b) => (checkPair(a, b) ? -1 : 1));
+let b = sorted.reduce(
+  (decoderKey, packet, i) =>
+    _.isEqual(packet, [[2]]) || _.isEqual(packet, [[6]])
+      ? decoderKey * (i + 1)
+      : decoderKey,
+  1
+);
+console.log("🚀 -> Part 2", b);
