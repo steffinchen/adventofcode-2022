@@ -5,24 +5,6 @@ const testInput = `>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>`;
 
 let input = getInput('day17');
 
-// ..####
-
-// ...#.
-// ..###
-// ...#.
-
-// ....#
-// ....#
-// ..###
-
-// ..#
-// ..#
-// ..#
-// ..#
-
-// ..##
-// ..##
-
 const rock1 = {
   cells: [
     { x: 2, y: 0 },
@@ -174,24 +156,20 @@ const dropRock = (grid, rockTemplate, jetIndex) => {
   while (rockCanMove) {
     rockCanMove = moveRock(rock, grid, jetIndex);
     jetIndex++;
-    // printGrid(grid);
   }
   //replace falling icon '@' with rock icon '#'
   rock.cells.forEach((cell) => {
     grid[cell.y][cell.x] = '#';
   });
-  //   printGrid(grid);
   return jetIndex;
 };
 
-const doA = (grid) => {
+const doIt = (grid, noOfRocks) => {
   let rocks = [rock1, rock2, rock3, rock4, rock5];
   let jetIndex = 0;
-  for (let rockIndex = 0; rockIndex < 2022; rockIndex++) {
-    console.log('rock ', rockIndex + 1);
+  for (let rockIndex = 0; rockIndex < noOfRocks; rockIndex++) {
     jetIndex = dropRock(grid, rocks[rockIndex % rocks.length], jetIndex);
   }
-  //   printGrid(grid);
   let height = 0;
   for (let i = grid.length - 1; i >= 0; i--) {
     if (grid[i].some((cell) => cell === '#')) {
@@ -206,8 +184,7 @@ let grid = Array(3)
   .fill()
   .map(() => Array(7).fill('.'));
 
-let a = doA(grid);
-
+let a = doIt(grid, noOfRocks);
 console.log('🚀 -> Part 1', a);
 
 let b = '';
