@@ -94,9 +94,9 @@ const canMoveLeft = (rock, grid) => {
 
 const moveRock = (rock, grid, jetIndex) => {
   let newRock = _.cloneDeep(rock);
-  newRock.cells.forEach((cell) => {
-    grid[cell.y][cell.x] = '@';
-  });
+  //   newRock.cells.forEach((cell) => {
+  //     grid[cell.y][cell.x] = '@';
+  //   });
   //   printGrid(grid);
 
   let jet = jets[jetIndex % jets.length];
@@ -118,12 +118,12 @@ const moveRock = (rock, grid, jetIndex) => {
     canMove = true;
   }
 
-  newRock.cells.forEach((cell) => {
-    grid[cell.y][cell.x] = '@';
-  });
-  rock.cells.forEach((cell) => {
-    grid[cell.y][cell.x] = '.';
-  });
+  //   newRock.cells.forEach((cell) => {
+  //     grid[cell.y][cell.x] = '@';
+  //   });
+  //   rock.cells.forEach((cell) => {
+  //     grid[cell.y][cell.x] = '.';
+  //   });
 
   rock.cells = newRock.cells;
   //   printGrid(grid);
@@ -168,6 +168,9 @@ const doIt = (grid, noOfRocks) => {
   let rocks = [rock1, rock2, rock3, rock4, rock5];
   let jetIndex = 0;
   for (let rockIndex = 0; rockIndex < noOfRocks; rockIndex++) {
+    if (rockIndex % 1000000 === 1) {
+      console.log(Math.round((1000000 / noOfRocks) * 100) + '%', rockIndex);
+    }
     jetIndex = dropRock(grid, rocks[rockIndex % rocks.length], jetIndex);
   }
   let height = 0;
@@ -184,8 +187,8 @@ let grid = Array(3)
   .fill()
   .map(() => Array(7).fill('.'));
 
-let a = doIt(grid, noOfRocks);
-console.log('🚀 -> Part 1', a);
+// let a = doIt(grid, 2022);
+// console.log('🚀 -> Part 1', a);
 
-let b = '';
+let b = doIt(grid, 1000000000000);
 console.log('🚀 -> Part 2', b);
