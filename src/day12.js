@@ -103,6 +103,7 @@ const bfs = (graph, target, root) => {
 
 let topo = parseInput(input);
 let graph = createGraph(topo);
+console.log('🚀 -> graph', graph);
 let a = bfs(graph, target, start);
 console.log('🚀 -> Part 1', a.distance);
 
