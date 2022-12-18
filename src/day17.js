@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { getInput } from './helper.js';
+import assert from 'node:assert';
 
 const testInput = `>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>`;
 
@@ -52,7 +53,7 @@ const rock5 = {
   ],
   height: 2,
 };
-const jets = input;
+const jets = testInput;
 
 const printGrid = (grid) => {
   //   _.forEachRight(grid, (row) => {
@@ -168,8 +169,8 @@ const doIt = (grid, noOfRocks) => {
   let rocks = [rock1, rock2, rock3, rock4, rock5];
   let jetIndex = 0;
   for (let rockIndex = 0; rockIndex < noOfRocks; rockIndex++) {
-    if (rockIndex % 1000000 === 1) {
-      console.log(Math.round((1000000 / noOfRocks) * 100) + '%', rockIndex);
+    if (rockIndex % 10000 === 1) {
+      console.log(Math.round((rockIndex / noOfRocks) * 100) + '%', rockIndex);
     }
     jetIndex = dropRock(grid, rocks[rockIndex % rocks.length], jetIndex);
   }
@@ -183,12 +184,107 @@ const doIt = (grid, noOfRocks) => {
   return height;
 };
 
+const findRepeat = (grid) => {
+  for (let length = 2; length <= grid.length / 2; length++) {
+    let first = grid.slice(0, length);
+    let second = grid.slice(length, length * 2);
+    if (_.isEqual(first, second)) {
+      let third = grid.slice(length * 2, length * 3);
+      if (_.isEqual(first, third)) {
+        return length;
+      }
+    }
+  }
+};
+
 let grid = Array(3)
   .fill()
   .map(() => Array(7).fill('.'));
 
-// let a = doIt(grid, 2022);
-// console.log('🚀 -> Part 1', a);
+let a = doIt(grid, 2022);
+//console.log('🚀 -> grid', grid);
+console.log('🚀 -> Part 1', a);
 
-let b = doIt(grid, 1000000000000);
-console.log('🚀 -> Part 2', b);
+let foo = [
+  ['.', '.', '#', '#', '#', '#', '.'],
+  ['.', '.', '.', '#', '.', '.', '.'],
+  ['.', '.', '#', '#', '#', '.', '.'],
+  ['#', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '.'],
+  ['.', '#', '#', '#', '.', '.', '.'],
+  ['#', '#', '#', '#', '#', '#', '.'],
+  ['#', '#', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '#', '#', '#', '#', '.'],
+  ['.', '.', '.', '#', '.', '.', '.'],
+  ['.', '.', '#', '#', '#', '.', '.'],
+  ['#', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '.'],
+  ['.', '#', '#', '#', '.', '.', '.'],
+  ['#', '#', '#', '#', '#', '#', '.'],
+  ['#', '#', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '#', '#', '#', '#', '.'],
+  ['.', '.', '.', '#', '.', '.', '.'],
+  ['.', '.', '#', '#', '#', '.', '.'],
+  ['#', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '#', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '#', '#', '#', '#', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '.'],
+  ['.', '#', '#', '#', '.', '.', '.'],
+  ['#', '#', '#', '#', '#', '#', '.'],
+  ['#', '#', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '#', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '#', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.'],
+];
+
+// let grid3 = Array(3)
+//   .fill()
+//   .map(() => Array(7).fill('.'));
+// doIt(grid3, 10);
+// printGrid(grid3);
+// console.log(grid3);
+
+let repeatAfter1 = findRepeat(foo);
+console.log('🚀 -> repeatAfter', repeatAfter1);
+
+// let largGrid = doIt(grid, 500000);
+// let repeatAfter = findRepeat(largGrid);
+// console.log('🚀 -> repeatAfter', repeatAfter);
+// assert(repeatAfter != undefinded);
+// let targetB = 1000000000000;
+// let grid2 = Array(3)
+//   .fill()
+//   .map(() => Array(7).fill('.'));
+// let heightForOneRepeat = doIt(grid2, repeatAfter);
+// let b = heightForOneRepeat * Math.floor(targetB / repeatAfter);
+
+// console.log('🚀 -> Part 2, ', b);
+
+// assert(b == 1514285714288);
