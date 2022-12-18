@@ -53,7 +53,7 @@ const rock5 = {
   ],
   height: 2,
 };
-const jets = testInput;
+const jets = input;
 
 const printGrid = (grid) => {
   //   _.forEachRight(grid, (row) => {
@@ -165,15 +165,7 @@ const dropRock = (grid, rockTemplate, jetIndex) => {
   return jetIndex;
 };
 
-const doIt = (grid, noOfRocks) => {
-  let rocks = [rock1, rock2, rock3, rock4, rock5];
-  let jetIndex = 0;
-  for (let rockIndex = 0; rockIndex < noOfRocks; rockIndex++) {
-    if (rockIndex % 10000 === 1) {
-      console.log(Math.round((rockIndex / noOfRocks) * 100) + '%', rockIndex);
-    }
-    jetIndex = dropRock(grid, rocks[rockIndex % rocks.length], jetIndex);
-  }
+const getHeight = (grid) => {
   let height = 0;
   for (let i = grid.length - 1; i >= 0; i--) {
     if (grid[i].some((cell) => cell === '#')) {
@@ -184,107 +176,88 @@ const doIt = (grid, noOfRocks) => {
   return height;
 };
 
+const doIt = (grid, noOfRocks, noOfBaseRows, noOfRepeatRows) => {
+  let rocks = [rock1, rock2, rock3, rock4, rock5];
+  let jetIndex = 0;
+  let noOfBaseRocks = 0;
+  for (let rockIndex = 0; rockIndex < noOfRocks; rockIndex++) {
+    if (rockIndex % 1000 === 1) {
+      console.log(Math.round((rockIndex / noOfRocks) * 100) + '%', rockIndex);
+    }
+    jetIndex = dropRock(grid, rocks[rockIndex % rocks.length], jetIndex);
+    let height = getHeight(grid);
+    if (height >= noOfBaseRows && noOfBaseRocks === 0) {
+      noOfBaseRocks = rockIndex;
+      console.log('no of rocks in base:', rockIndex);
+    }
+    if (height >= noOfBaseRows + noOfRepeatRows - 1) {
+      console.log(rockIndex, rockIndex - noOfBaseRocks);
+      return { noOfBaseRocks, rocksPerCycle: rockIndex - noOfBaseRocks };
+    }
+  }
+
+  return getHeight(grid);
+};
+
 const findRepeat = (grid) => {
-  for (let length = 2; length <= grid.length / 2; length++) {
-    let first = grid.slice(0, length);
-    let second = grid.slice(length, length * 2);
-    if (_.isEqual(first, second)) {
-      let third = grid.slice(length * 2, length * 3);
-      if (_.isEqual(first, third)) {
-        return length;
+  for (let start = 2758; start < grid.length; start++) {
+    if (start % 100 == 0) console.log(start);
+    for (let length = 2; length <= grid.length / 2; length++) {
+      let first = grid.slice(start, start + length);
+      let second = grid.slice(start + length, start + length * 2);
+      if (_.isEqual(first, second)) {
+        let third = grid.slice(length * 2, length * 3);
+        if (_.isEqual(first, third)) {
+          console.log(first.length);
+          console.log(
+            `first: ${start} -> ${start + length - 1}, second: ${
+              start + length
+            } -> ${start + length * 2 - 1}`
+          );
+          return { length, start };
+        }
       }
     }
   }
 };
 
-let grid = Array(3)
+// let grid = Array(3)
+//   .fill()
+//   .map(() => Array(7).fill('.'));
+
+// let a = doIt(grid, 2022);
+// console.log('🚀 -> Part 1', a);
+
+// Part 2
+let grid3 = Array(3)
   .fill()
   .map(() => Array(7).fill('.'));
+doIt(grid3, 10000);
 
-let a = doIt(grid, 2022);
-//console.log('🚀 -> grid', grid);
-console.log('🚀 -> Part 1', a);
+let { start, length } = findRepeat(grid3);
+start -= 1;
+console.log('🚀 -> repeatAfter', start, length);
+let grid2 = Array(3)
+  .fill()
+  .map(() => Array(7).fill('.'));
+let { noOfBaseRocks, rocksPerCycle } = doIt(grid2, length * 3, start, length);
 
-let foo = [
-  ['.', '.', '#', '#', '#', '#', '.'],
-  ['.', '.', '.', '#', '.', '.', '.'],
-  ['.', '.', '#', '#', '#', '.', '.'],
-  ['#', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '.'],
-  ['.', '#', '#', '#', '.', '.', '.'],
-  ['#', '#', '#', '#', '#', '#', '.'],
-  ['#', '#', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '#', '#', '#', '#', '.'],
-  ['.', '.', '.', '#', '.', '.', '.'],
-  ['.', '.', '#', '#', '#', '.', '.'],
-  ['#', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '.'],
-  ['.', '#', '#', '#', '.', '.', '.'],
-  ['#', '#', '#', '#', '#', '#', '.'],
-  ['#', '#', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '#', '#', '#', '#', '.'],
-  ['.', '.', '.', '#', '.', '.', '.'],
-  ['.', '.', '#', '#', '#', '.', '.'],
-  ['#', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '#', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '#', '#', '#', '#', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '.'],
-  ['.', '#', '#', '#', '.', '.', '.'],
-  ['#', '#', '#', '#', '#', '#', '.'],
-  ['#', '#', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '#', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '#', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.'],
-];
+console.log('🚀 -> cycle', noOfBaseRocks, rocksPerCycle);
 
-// let grid3 = Array(3)
-//   .fill()
-//   .map(() => Array(7).fill('.'));
-// doIt(grid3, 10);
-// printGrid(grid3);
-// console.log(grid3);
+let targetB = 1000000000000 - noOfBaseRocks;
+let noOfCycles = Math.floor(targetB / rocksPerCycle);
+console.log('🚀 -> Number of cycles', noOfCycles);
+let rocksAtEnd = targetB % rocksPerCycle;
+console.log('🚀 -> rocksAtEnd', rocksAtEnd);
+let grid4 = Array(3)
+  .fill()
+  .map(() => Array(7).fill('.'));
+let remainingHeight = doIt(grid4, rocksAtEnd);
+console.log('🚀 -> remainingHeight', remainingHeight);
+let b = noOfCycles * length + remainingHeight;
 
-let repeatAfter1 = findRepeat(foo);
-console.log('🚀 -> repeatAfter', repeatAfter1);
+//1585632181181 too low
+console.log('🚀 -> Part 2, ', b);
+assert(b > 1585632181181 && b < 1586543988086);
 
-// let largGrid = doIt(grid, 500000);
-// let repeatAfter = findRepeat(largGrid);
-// console.log('🚀 -> repeatAfter', repeatAfter);
-// assert(repeatAfter != undefinded);
-// let targetB = 1000000000000;
-// let grid2 = Array(3)
-//   .fill()
-//   .map(() => Array(7).fill('.'));
-// let heightForOneRepeat = doIt(grid2, repeatAfter);
-// let b = heightForOneRepeat * Math.floor(targetB / repeatAfter);
-
-// console.log('🚀 -> Part 2, ', b);
-
-// assert(b == 1514285714288);
+// assert(b == 1514285714288, 1514285714288 - b);
