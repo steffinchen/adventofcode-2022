@@ -53,7 +53,7 @@ const rock5 = {
   ],
   height: 2,
 };
-const jets = input;
+const jets = testInput;
 
 const printGrid = (grid) => {
   //   _.forEachRight(grid, (row) => {
@@ -200,7 +200,7 @@ const doIt = (grid, noOfRocks, noOfBaseRows, noOfRepeatRows) => {
 };
 
 const findRepeat = (grid) => {
-  for (let start = 2758; start < grid.length; start++) {
+  for (let start = 0; start < grid.length; start++) {
     if (start % 100 == 0) console.log(start);
     for (let length = 2; length <= grid.length / 2; length++) {
       let first = grid.slice(start, start + length);
@@ -235,7 +235,6 @@ let grid3 = Array(3)
 doIt(grid3, 10000);
 
 let { start, length } = findRepeat(grid3);
-start -= 1;
 console.log('🚀 -> repeatAfter', start, length);
 let grid2 = Array(3)
   .fill()
@@ -254,10 +253,10 @@ let grid4 = Array(3)
   .map(() => Array(7).fill('.'));
 let remainingHeight = doIt(grid4, rocksAtEnd);
 console.log('🚀 -> remainingHeight', remainingHeight);
-let b = noOfCycles * length + remainingHeight;
+let b = noOfCycles * length + remainingHeight + start;
 
 //1585632181181 too low
 console.log('🚀 -> Part 2, ', b);
-assert(b > 1585632181181 && b < 1586543988086);
+// assert(b > 1585632181181 && b < 1586543988086);
 
-// assert(b == 1514285714288, 1514285714288 - b);
+assert(b == 1514285714288, 1514285714288 - b);
